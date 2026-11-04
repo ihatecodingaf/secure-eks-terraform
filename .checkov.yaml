@@ -1,0 +1,8 @@
+framework:
+  - terraform
+skip-path:
+  - .terraform
+skip-check:
+  # Registry modules are pinned by version and locked by .terraform.lock.hcl;
+  # commit-hash pinning only applies to git sources.
+  - CKV_TF_1

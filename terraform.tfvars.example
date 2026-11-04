@@ -1,0 +1,31 @@
+# Copy to terraform.tfvars and adjust.
+
+project_name = "secure-eks"
+environment  = "dev"
+region       = "us-east-1"
+
+# --- Cost vs. resilience -------------------------------------------------------
+# Production: one NAT per AZ and private interface endpoints.
+# Short-lived demo: uncomment the two lines below to save roughly $250/month.
+# single_nat_gateway         = true
+# enable_interface_endpoints = false
+
+# --- Cluster -------------------------------------------------------------------
+kubernetes_version  = "1.35"
+node_instance_types = ["t3.large"]
+node_capacity_type  = "ON_DEMAND"
+node_min_size       = 2
+node_desired_size   = 2
+node_max_size       = 4
+
+# --- Access --------------------------------------------------------------------
+# Private API only; reach it through the SSM bastion.
+endpoint_public_access = false
+enable_bastion         = true
+
+# Optional: grant your SSO admin role cluster-admin.
+# cluster_admin_role_arns = ["arn:aws:iam::123456789012:role/AWSReservedSSO_AdministratorAccess_abc123"]
+
+# Optional: allow kubectl from your office/VPN IP directly (never 0.0.0.0/0).
+# endpoint_public_access       = true
+# endpoint_public_access_cidrs = ["203.0.113.10/32"]
