@@ -1,0 +1,18 @@
+#!/bin/bash
+set -euo pipefail
+
+# kubectl from the official release channel, verified against its SHA-256.
+KUBECTL_VERSION="$(curl -fsSL https://dl.k8s.io/release/stable.txt)"
+cd /tmp
+curl -fsSLO "https://dl.k8s.io/release/$${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+curl -fsSLO "https://dl.k8s.io/release/$${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256"
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm -f kubectl kubectl.sha256
+
+# Configure kubectl on first login for any Session Manager user.
+cat >/etc/profile.d/eks.sh <<'EOF'
+if [ ! -f "$HOME/.kube/config" ]; then
+  aws eks update-kubeconfig --name "${cluster_name}" --region "${region}" >/dev/null 2>&1 || true
+fi
+EOF
